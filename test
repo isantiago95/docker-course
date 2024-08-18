@@ -1,0 +1,49 @@
+# MARIA DB
+dco run \
+--name world-db \
+-e MARIADB_USER=example-user \
+-e MARIADB_PASSWORD=user-password \
+-e MARIADB_ROOT_PASSWORD=root-secret-password \
+-e MARIADB_DATABASE=world-db \
+-dp 3306:3306 \
+-v world-db:/var/lib/mysql:Z \
+--network world-app \
+mariadb:jammy
+
+# PHPMYADMIN
+dco run \
+--name phpmyadmin \
+-dp 8080:80 \
+-e PMA_ARBITRARY=1 \
+--network world-app \
+phpmyadmin:5.2.0-apache
+
+# NODE
+dco run \
+--name nest-app \
+-w /app \
+-dp 80:3000 \
+-v "$(pwd)":/app \
+node:16-alpine3.16 \
+sh -c "yarn install && yarn start:dev"
+
+
+# EJERCICIO LABORATORIO
+dv create  postgres-db
+dn create postgres-net
+
+docker container run \
+-d \
+--name postgres-db \
+-e POSTGRES_PASSWORD=123456 \
+-v postgres-db:/var/lib/postgresql/data \
+--network postgres-net \
+postgres:15.1
+
+docker container run \
+--name pgAdmin \
+-e PGADMIN_DEFAULT_PASSWORD=123456 \
+-e PGADMIN_DEFAULT_EMAIL=superman@google.com \
+-dp 8080:80 \
+--network postgres-net \
+dpage/pgadmin4:6.17

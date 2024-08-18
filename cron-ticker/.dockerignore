@@ -1,0 +1,6 @@
+node_modules/
+dockerfile
+pnpm-lock.yaml
+*ignore*
+.git*
+README.md
